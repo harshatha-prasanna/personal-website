@@ -78,10 +78,10 @@ export default function GitHubHeatmap() {
                 <div
                   key={i}
                   style={{
-                    width: '10px',
+                    width: '14px',
                     flexShrink: 0,
-                    fontSize: '9px',
-                    lineHeight: '12px',
+                    fontSize: '12px',
+                    lineHeight: '16px',
                     color: '#8B7355',
                     fontFamily: 'var(--font-sans), sans-serif',
                     whiteSpace: 'nowrap',
@@ -104,8 +104,8 @@ export default function GitHubHeatmap() {
                           : undefined
                       }
                       style={{
-                        width: '10px',
-                        height: '10px',
+                        width: '14px',
+                        height: '14px',
                         borderRadius: '2px',
                         backgroundColor: day ? LEVEL_COLORS[day.level] : 'transparent',
                         flexShrink: 0,
