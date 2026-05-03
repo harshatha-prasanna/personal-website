@@ -16,6 +16,7 @@ module.exports = {
       fontFamily: {
         serif: ['Georgia', 'serif'],
         sans: ['var(--font-sans)', 'sans-serif'],
+        quote: ['var(--font-quote)', 'Georgia', 'serif'],
       },
       borderColor: {
         DEFAULT: '#1A1410',

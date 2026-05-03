@@ -72,7 +72,7 @@ DM Sans is loaded via `next/font/google` and injected as `--font-sans`. `font-se
 Full name as a large DM Serif Display heading, tagline pulled from `config.tagline` (supports inline HTML via `dangerouslySetInnerHTML`). Below the tagline: a row of `font-sans text-sm text-taupe` links to `config.links.github` (GitHub), `config.links.linkedin` (LinkedIn), and `config.resume` (Resume), each opening in a new tab, hovering to `text-ink`, separated by `&middot;` dots. Includes a fixed corner widget (top-right) that shows the Spotify now-playing track (polled every `config.nowPlaying.refreshInterval` ms via `/api/nowplaying`) and the current San Diego weather (via `/api/weather`). The widget only renders after the first Spotify fetch resolves to avoid layout shift.
 
 ### Projects (`components/Projects.jsx`)
-Grid of project cards (1 col on mobile, 2 col on md+). Each card pulls from `config.projects` and shows the project title, description, tech stack chips, and a GitHub link. Cards have a 1px taupe border and use the background color for fill.
+Horizontal scrolling carousel of project cards. Shows 2 cards per page on desktop (md+) and 1 per page on mobile. Left/right arrow buttons (taupe circle, 1px border, bg-background) advance by one page; arrows hidden when only one page exists. Dot indicators below the track (6px circles, taupe fill when active, secondary fill otherwise). Smooth 300ms ease-in-out CSS transform transition. `cardsPerView` detected via window resize listener (default 2 for SSR). Each card pulls from `config.projects` and shows: thumbnail image (if available), title, description, tech stack chips, GitHub link, and live site link (if available). Cards have a 1px taupe border, bg-background fill, and `h-full` so same-row cards match height. `'use client'` component.
 
 ### Philosophy interstitial (`components/Philosophy.jsx`)
 A visual break between Projects and About, not linked in any nav. Renders `config.philosophy.quote` as a large DM Serif Display pull-quote with a 2px `#8B7355` left border and `pl-6` padding. No interactive elements. `aria-hidden="true"` since it is decorative.
@@ -81,7 +81,7 @@ A visual break between Projects and About, not linked in any nav. Renders `confi
 Prose section pulling from `config.about.paragraph`. Below the paragraph, a "A few things about me" subsection heading (`font-sans text-sm font-medium text-ink`) followed by a stack of personal fact lines from `config.about.personalFacts`. Each fact is `font-sans text-sm text-taupe border-l border-taupe pl-4` with `space-y-3` between them. Static component, no client hooks.
 
 ### Skills Radial Chart (`components/SkillsRadial.jsx`)
-Client component. Radar/radial chart visualizing skill axes from `config.skills` (each entry has `axis` and a numeric `value`). Stub not yet built.
+Client component. Horizontal bar chart reading from `config.skills` (each entry has `axis` and a numeric `value` out of 10). Each row: axis label left-aligned in a fixed `w-36` column, a `bg-secondary` track bar with a `bg-taupe` fill proportional to `value/10`, and the numeric value right-aligned. Plain HTML/CSS via Tailwind, no Recharts. Below the bars: `learningNote` rendered in `font-sans text-xs italic text-taupe`.
 
 ### Resume and Certs (`components/ResumeAndCerts.jsx`)
 Two-part section: a resume download link pointing to `config.resume`, and a list of certifications from `config.certs` (each has `title`, `issuer`, `date`, `url`). Stub not yet built.

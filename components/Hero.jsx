@@ -12,6 +12,7 @@ export default function Hero() {
     async function fetchTrack() {
       try {
         const res = await fetch('/api/nowplaying');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setTrack(data.title ? data : null);
       } catch {
@@ -24,6 +25,7 @@ export default function Hero() {
     async function fetchWeather() {
       try {
         const res = await fetch('/api/weather');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setWeather(data.error ? null : data);
       } catch {
@@ -45,11 +47,18 @@ export default function Hero() {
             {config.name}
           </h1>
           <p
-            className="text-taupe text-base md:text-lg font-light max-w-lg leading-relaxed"
+            className="text-taupe text-base md:text-lg font-light max-w-lg leading-loose"
             dangerouslySetInnerHTML={{ __html: config.tagline }}
           />
         </div>
         <div className="flex items-center gap-3">
+          <a
+            href={`mailto:${config.email}`}
+            className="font-sans text-sm text-taupe hover:text-ink transition-colors"
+          >
+            Email
+          </a>
+          <span className="text-taupe text-sm" aria-hidden="true">&middot;</span>
           <a
             href={config.links.github}
             target="_blank"
@@ -155,7 +164,7 @@ function CornerWidget({ track, weather }) {
           <div className="flex items-center gap-1.5">
             <MusicIcon />
             <span className="text-taupe text-[10px] tracking-widest uppercase font-medium leading-none">
-              Listening To
+              {track?.isPlaying ? 'Listening To' : 'Last Listened To'}
             </span>
           </div>
           {track?.isPlaying && (
@@ -179,7 +188,7 @@ function CornerWidget({ track, weather }) {
               <p className="text-taupe text-[11px] truncate mt-0.5">{track.artist}</p>
             </>
           ) : (
-            <p className="text-taupe text-xs">not listening</p>
+            <p className="text-taupe text-xs">—</p>
           )}
         </div>
       </div>

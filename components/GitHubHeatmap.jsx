@@ -31,41 +31,49 @@ export default function GitHubHeatmap() {
   const [weeks, setWeeks] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     fetch('/api/github-heatmap')
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then(data => {
         const contributions = data.contributions ?? [];
-        setTotal(contributions.reduce((sum, d) => sum + d.count, 0));
+        setTotal(data.total ?? contributions.reduce((sum, d) => sum + d.count, 0));
         setWeeks(groupIntoWeeks(contributions));
       })
-      .catch(() => {})
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, []);
 
   return (
     <section id="activity" className="space-y-5">
-      <h2 className="font-serif text-3xl text-ink">
-        <a
-          href={config.links.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-taupe transition-colors"
-        >
-          Activity
-        </a>
-      </h2>
+      <div className="space-y-1">
+        <h2 className="font-serif text-3xl text-ink">
+          <a
+            href={config.links.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-taupe transition-colors"
+          >
+            Activity
+          </a>
+        </h2>
+        <p className="font-sans text-sm text-taupe">GitHub Commit Activity</p>
+      </div>
       {loading ? (
         <div className="h-24 bg-secondary rounded animate-pulse" />
+      ) : error ? (
+        <p className="font-sans text-sm text-taupe">Activity unavailable right now.</p>
       ) : (
         <div>
           <p className="font-sans text-sm mb-4" style={{ color: '#8B7355' }}>
             {total} contribution{total !== 1 ? 's' : ''} in the last year
           </p>
-        <div style={{ overflowX: 'auto' }}>
-          <div style={{ display: 'inline-block' }}>
-            <div style={{ display: 'flex', gap: '2px', marginBottom: '4px' }}>
+          <div style={{ overflowX: 'auto', maxWidth: '100%' }}>
+            <div style={{ display: 'flex', gap: '2px', marginBottom: '4px', width: 'max-content' }}>
               {weeks.map((week, i) => (
                 <div
                   key={i}
@@ -84,7 +92,7 @@ export default function GitHubHeatmap() {
                 </div>
               ))}
             </div>
-            <div style={{ display: 'flex', gap: '2px' }}>
+            <div style={{ display: 'flex', gap: '2px', width: 'max-content' }}>
               {weeks.map((week, wi) => (
                 <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                   {week.map((day, di) => (
@@ -108,7 +116,6 @@ export default function GitHubHeatmap() {
               ))}
             </div>
           </div>
-        </div>
         </div>
       )}
     </section>

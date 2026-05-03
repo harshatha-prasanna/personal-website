@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 
 const GRAPHQL_URL = 'https://api.github.com/graphql';
-const USERNAME = 'harshatha-prasanna';
 
 const QUERY = `
-  query($login: String!) {
-    user(login: $login) {
+  query {
+    viewer {
       contributionsCollection {
         contributionCalendar {
+          totalContributions
           weeks {
             contributionDays {
               date
@@ -32,7 +32,7 @@ const LEVEL_MAP = {
 export async function GET() {
   const token = process.env.GITHUB_TOKEN;
   if (!token || token === 'your_classic_token_here') {
-    return NextResponse.json({ contributions: [] });
+    return NextResponse.json({ contributions: [], total: 0 });
   }
 
   try {
@@ -42,7 +42,7 @@ export async function GET() {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ query: QUERY, variables: { login: USERNAME } }),
+      body: JSON.stringify({ query: QUERY }),
       next: { revalidate: 3600 },
     });
 
@@ -51,10 +51,9 @@ export async function GET() {
     const { data, errors } = await res.json();
     if (errors?.length) throw new Error(errors[0].message);
 
-    const weeks =
-      data.user.contributionsCollection.contributionCalendar.weeks;
+    const calendar = data.viewer.contributionsCollection.contributionCalendar;
 
-    const contributions = weeks.flatMap(w =>
+    const contributions = calendar.weeks.flatMap(w =>
       w.contributionDays.map(d => ({
         date: d.date,
         count: d.contributionCount,
@@ -62,9 +61,9 @@ export async function GET() {
       }))
     );
 
-    return NextResponse.json({ contributions });
+    return NextResponse.json({ contributions, total: calendar.totalContributions });
   } catch (err) {
     console.error('[github-heatmap route]', err.message);
-    return NextResponse.json({ contributions: [] });
+    return NextResponse.json({ contributions: [], total: 0 });
   }
 }

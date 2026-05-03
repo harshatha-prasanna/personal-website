@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 const API_KEY = process.env.OPENWEATHER_API_KEY;
 const LAT = process.env.WEATHER_LAT ?? '32.7157';
 const LON = process.env.WEATHER_LON ?? '-117.1611';
