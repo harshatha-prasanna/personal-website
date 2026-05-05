@@ -1,15 +1,22 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import config from '@/config';
 
+const GAP = 16;
+
 export default function Projects() {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [cardsPerView, setCardsPerView] = useState(2);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const containerRef = useRef(null);
 
   useEffect(() => {
     function update() {
-      setCardsPerView(window.innerWidth >= 768 ? 2 : 1);
-      setCurrentPage(0);
+      setIsMobile(window.innerWidth < 768);
+      setCurrentIndex(0);
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
     }
     update();
     window.addEventListener('resize', update);
@@ -17,15 +24,17 @@ export default function Projects() {
   }, []);
 
   const projects = config.projects;
-  const totalPages = Math.ceil(projects.length / cardsPerView);
-  const page = Math.min(currentPage, totalPages - 1);
+  const N = projects.length;
 
-  const pages = Array.from({ length: totalPages }, (_, i) =>
-    projects.slice(i * cardsPerView, i * cardsPerView + cardsPerView)
-  );
+  const totalSlides = isMobile ? N : Math.max(1, N - 1);
+  const safeIndex = Math.min(currentIndex, totalSlides - 1);
 
-  const gapPx = 16;
-  const cardWidth = `calc(${100 / cardsPerView}% - ${(gapPx * (cardsPerView - 1)) / cardsPerView}px)`;
+  const cardWidth = containerWidth > 0
+    ? (isMobile ? containerWidth : (containerWidth - GAP) / 2)
+    : 0;
+  const translateX = isMobile
+    ? safeIndex * containerWidth
+    : safeIndex * (cardWidth + GAP);
 
   return (
     <section id="projects" className="space-y-6">
@@ -33,11 +42,11 @@ export default function Projects() {
 
       <div className="space-y-5">
         <div className="relative px-10">
-          {totalPages > 1 && (
+          {totalSlides > 1 && (
             <>
               <button
-                onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
-                disabled={page === 0}
+                onClick={() => setCurrentIndex(i => Math.max(0, i - 1))}
+                disabled={safeIndex === 0}
                 aria-label="Previous projects"
                 className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center font-sans text-sm bg-background text-taupe hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
                 style={{ border: '1px solid #8B7355' }}
@@ -46,8 +55,8 @@ export default function Projects() {
               </button>
 
               <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
-                disabled={page === totalPages - 1}
+                onClick={() => setCurrentIndex(i => Math.min(totalSlides - 1, i + 1))}
+                disabled={safeIndex === totalSlides - 1}
                 aria-label="Next projects"
                 className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center font-sans text-sm bg-background text-taupe hover:text-ink disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
                 style={{ border: '1px solid #8B7355' }}
@@ -57,36 +66,35 @@ export default function Projects() {
             </>
           )}
 
-          <div className="overflow-hidden">
+          <div className="overflow-hidden" ref={containerRef}>
             <div
-              className="flex transition-transform duration-300 ease-in-out"
-              style={{ transform: `translateX(-${page * 100}%)` }}
+              className="flex items-stretch transition-transform duration-300 ease-in-out"
+              style={{ gap: GAP, transform: `translateX(-${translateX}px)` }}
             >
-              {pages.map((pageCards, pageIdx) => (
-                <div key={pageIdx} className="min-w-full flex gap-4 items-stretch">
-                  {pageCards.map(project => (
-                    <div key={project.title} style={{ flex: `0 0 ${cardWidth}` }}>
-                      <ProjectCard project={project} />
-                    </div>
-                  ))}
+              {projects.map(project => (
+                <div
+                  key={project.title}
+                  style={{ flex: `0 0 ${cardWidth}px`, minWidth: 0 }}
+                >
+                  <ProjectCard project={project} />
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {totalPages > 1 && (
+        {totalSlides > 1 && (
           <div className="flex justify-center gap-2">
-            {pages.map((_, idx) => (
+            {Array.from({ length: totalSlides }).map((_, idx) => (
               <button
                 key={idx}
-                onClick={() => setCurrentPage(idx)}
-                aria-label={`Go to page ${idx + 1}`}
+                onClick={() => setCurrentIndex(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
                 className="rounded-full transition-colors"
                 style={{
                   width: 6,
                   height: 6,
-                  background: idx === page ? '#8B7355' : '#E8E0D0',
+                  background: idx === safeIndex ? '#8B7355' : '#E8E0D0',
                   border: '1px solid #8B7355',
                 }}
               />

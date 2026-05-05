@@ -95,10 +95,10 @@ const config = {
 
 skills: [
     { axis: "Python", value: 9 },
-    { axis: "Machine Learning", value: 7 },
+    { axis: "Machine Learning", value: 7, learning: true },
     { axis: "Data Wrangling", value: 8 },
     { axis: "Statistics", value: 7 },
-    { axis: "SQL", value: 7 },
+    { axis: "SQL", value: 7, learning: true },
     { axis: "Data Visualization", value: 8 },
   ],
 
@@ -109,7 +109,7 @@ skills: [
   },
 
 about: {
-    paragraph: "I am a second-year Data Science and Cognitive Science student at UCSD. My main focus is on using data and AI to drive business growth, building automated workflows, accelerating GTM decisions, and making data infrastructure actually useful for the people using it. On the side, I have a genuine interest in ML observability and explainable AI. That interest started with a 1.6M-record income dataset that could show a 29% wage gap but could not explain why it existed. That gap between visibility and actionability still fascinates me.",
+    paragraph: "I am a second-year Data Science and Cognitive Science student at UCSD focused on building data-driven systems that turn insights into action. I am particularly interested in GTM and automation, designing workflows and models that help teams move faster and make better decisions. I also have a genuine interest in ML observability and explainable AI, an interest that started with a 1.6M-record income dataset that could show a 29% wage gap but could not explain why it existed. That gap between visibility and actionability still fascinates me.",
     personalFacts: [
       "Fluent in English and Tamil. I went to Tamil school growing up and chose it as my second language in high school.",
       "I have been playing the flute since 2017 and picked up the Carnatic flute in 2022.",
